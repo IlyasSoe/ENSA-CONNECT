@@ -10,3 +10,7 @@ ENSA Connect est une plateforme de réseau social professionnel exclusivement d�
 
 ## ⏰ Deadline
 **Fin de l’année universitaire**
+
+## 🎨 Design 
+(#1 Design Ensa Connect Privilege Flow and define 'Banned' or 'Suspended' state UI behaviors)
+[Figma design ban/suspended](https://www.figma.com/design/hF3iEdEepqfFH4OYs03rZO/ENSA-CONNECT?node-id=0-1&t=ZB9yloPnPgsALn03-1)
