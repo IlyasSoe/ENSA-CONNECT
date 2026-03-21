@@ -12,37 +12,34 @@ document.addEventListener('DOMContentLoaded', () => {
     textarea.style.height = textarea.scrollHeight + 'px';
   });
 
-  // WebSocket
-  const conn = new WebSocket('wss://ensa-connect-production.up.railway.app:8080');
+  // Pusher — recevoir les messages
+  const pusher = new Pusher('c922bfca140061b3ea91', { cluster: 'eu' });
+  const channel = pusher.subscribe('chat');
 
-  conn.onopen = () => {
-    console.log("Connecté!");
-  };
-
-  // Recevoir un message
-  conn.onmessage = (e) => {
-    ajouterMessage(e.data, 'receiver');
-  };
+  channel.bind('message', (data) => {
+    ajouterMessage(data.text, 'receiver');
+  });
 
   // Envoyer un message
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-
     const texte = textarea.value.trim();
     if (!texte) return;
 
-    conn.send(texte);
-    ajouterMessage(texte, 'sender');  // afficher localement
+    fetch('send.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: texte })
+    });
 
-    // Reset textarea
+    ajouterMessage(texte, 'sender');
     textarea.value = '';
     textarea.style.height = '50px';
   });
 
   function ajouterMessage(texte, type) {
     const now = new Date();
-    const date = `${now.toLocaleDateString()} ${now.getHours()}h ${String(now.getMinutes()).padStart(2, '0')}`;
-
+    const date = `${now.toLocaleDateString()} ${now.getHours()}h${String(now.getMinutes()).padStart(2, '0')}`;
     const p = document.createElement('p');
     p.className = type;
     p.innerHTML = `
@@ -50,9 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <br>
       <span class="date">${date}</span>
     `;
-
     msg.appendChild(p);
-    msg.scrollTop = msg.scrollHeight;  // scroll en bas
+    msg.scrollTop = msg.scrollHeight;
   }
-
 });
