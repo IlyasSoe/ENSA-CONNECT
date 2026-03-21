@@ -1,6 +1,14 @@
 <?php
 $port = getenv('PORT') ?: '8080';
-echo "PORT env value: " . var_export(getenv('PORT'), true) . "\n";
-echo "Starting on port: $port\n";
+echo "PORT: $port\n";
+
+// Lancer Ratchet en arrière-plan sur port fixe
 shell_exec('php chat/bin/server.php > /dev/null 2>&1 &');
-passthru("php -S 0.0.0.0:" . $port . " -t chat/");
+
+// Attendre que Ratchet démarre
+sleep(1);
+
+// Lancer serveur web
+$cmd = "php -S 0.0.0.0:" . intval($port) . " -t chat/";
+echo "Running: $cmd\n";
+passthru($cmd);
