@@ -3,7 +3,7 @@ $port = getenv('PORT') ?: '8080';
 echo "PORT: $port\n";
 
 // Lancer Ratchet en arrière-plan sur port fixe
-shell_exec('php chat/bin/server.php > /dev/null 2>&1 &');
+shell_exec('php chat/bin/chat-server.php > /dev/null 2>&1 &');
 
 // Attendre que Ratchet démarre
 sleep(1);
