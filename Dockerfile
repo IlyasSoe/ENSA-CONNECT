@@ -9,4 +9,4 @@ COPY . .
 RUN composer install --working-dir=chat
 
 EXPOSE 8080
-CMD ["sh", "-c", "php -S 0.0.0.0:${PORT:-8080} -t chat/"]
+CMD ["sh", "-c", "php chat/bin/server.php & php -S 0.0.0.0:${PORT:-8080} -t chat/"]
