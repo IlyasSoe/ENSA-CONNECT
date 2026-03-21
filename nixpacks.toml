@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["php82", "php82Packages.composer"]
+nixPkgs = ["php", "phpPackages.composer"]
 
 [phases.build]
 cmds = ["composer install --working-dir=chat"]
