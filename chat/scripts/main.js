@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // WebSocket
-  const conn = new WebSocket('ws://ensa-connect-production.up.railway.app');
+  const conn = new WebSocket('wss://ensa-connect-production.up.railway.app:8080');
 
   conn.onopen = () => {
     console.log("Connecté!");
