@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Auto-resize textarea
   textarea.addEventListener('input', () => {
-    textarea.style.height = '50px';
+    textarea.style.height = '60px';
     textarea.style.height = textarea.scrollHeight + 'px';
   });
 
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     conn.send(texte);
     ajouterMessage(texte, 'sender');
     textarea.value = '';
-    textarea.style.height = '50px';
+    textarea.style.height = '60px';
   });
 
   function ajouterMessage(texte, type) {
