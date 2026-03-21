@@ -12,28 +12,22 @@ document.addEventListener('DOMContentLoaded', () => {
     textarea.style.height = textarea.scrollHeight + 'px';
   });
 
-  // Pusher — recevoir les messages
+  // ID unique par session
+  const userId = Math.random().toString(36).substr(2, 9);
+
+  // Pusher
   const pusher = new Pusher('c922bfca140061b3ea91', { cluster: 'eu' });
   const channel = pusher.subscribe('chat');
 
+  // Recevoir les messages des autres seulement
   channel.bind('message', (data) => {
-    ajouterMessage(data.text, 'receiver');
+    if (data.userId !== userId) {
+      ajouterMessage(data.text, 'receiver');
+    }
   });
 
   // Envoyer un message
-  // form.addEventListener('submit', (e) => {
-  //   e.preventDefault();
-  //   const texte = textarea.value.trim();
-  //   if (!texte) return;
-
-  //   fetch('send.php', {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify({ text: texte })
-  //   });
-
-  // Envoyer un message
-form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
     const texte = textarea.value.trim();
     if (!texte) return;
@@ -41,25 +35,13 @@ form.addEventListener('submit', (e) => {
     fetch('send.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: texte })
+      body: JSON.stringify({ text: texte, userId: userId })
     });
 
-    ajouterMessage(texte, 'sender'); // afficher localement
+    ajouterMessage(texte, 'sender');
     textarea.value = '';
     textarea.style.height = '50px';
-});
-
-// Pusher — recevoir seulement les messages des AUTRES
-channel.bind('message', (data) => {
-    // ignorer si c'est notre propre message
-    if (data.text !== textarea.value.trim()) {
-        ajouterMessage(data.text, 'receiver');
-    }
-});
-  //   ajouterMessage(texte, 'sender');
-  //   textarea.value = '';
-  //   textarea.style.height = '50px';
-  // });
+  });
 
   function ajouterMessage(texte, type) {
     const now = new Date();
@@ -74,4 +56,5 @@ channel.bind('message', (data) => {
     msg.appendChild(p);
     msg.scrollTop = msg.scrollHeight;
   }
+
 });
