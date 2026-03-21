@@ -1,6 +1,6 @@
 <?php
-$port = getenv('WEB_PORT') ?: '8080';
-echo "PORT: $port\n";
+echo "Starting...\n";
 shell_exec('php chat/bin/chat-server.php > /dev/null 2>&1 &');
 sleep(1);
-passthru("php -S 0.0.0.0:" . intval($port) . " -t chat/");
+echo "Running web server on 8080\n";
+passthru("php -S 0.0.0.0:8080 -t chat/");
