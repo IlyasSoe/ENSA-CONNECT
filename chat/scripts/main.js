@@ -21,7 +21,19 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Envoyer un message
-  form.addEventListener('submit', (e) => {
+  // form.addEventListener('submit', (e) => {
+  //   e.preventDefault();
+  //   const texte = textarea.value.trim();
+  //   if (!texte) return;
+
+  //   fetch('send.php', {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify({ text: texte })
+  //   });
+
+  // Envoyer un message
+form.addEventListener('submit', (e) => {
     e.preventDefault();
     const texte = textarea.value.trim();
     if (!texte) return;
@@ -32,10 +44,22 @@ document.addEventListener('DOMContentLoaded', () => {
       body: JSON.stringify({ text: texte })
     });
 
-    ajouterMessage(texte, 'sender');
+    ajouterMessage(texte, 'sender'); // afficher localement
     textarea.value = '';
     textarea.style.height = '50px';
-  });
+});
+
+// Pusher — recevoir seulement les messages des AUTRES
+channel.bind('message', (data) => {
+    // ignorer si c'est notre propre message
+    if (data.text !== textarea.value.trim()) {
+        ajouterMessage(data.text, 'receiver');
+    }
+});
+  //   ajouterMessage(texte, 'sender');
+  //   textarea.value = '';
+  //   textarea.style.height = '50px';
+  // });
 
   function ajouterMessage(texte, type) {
     const now = new Date();
