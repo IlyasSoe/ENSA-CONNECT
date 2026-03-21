@@ -12,19 +12,20 @@ document.addEventListener('DOMContentLoaded', () => {
     textarea.style.height = textarea.scrollHeight + 'px';
   });
 
-  // ID unique par session
-  const userId = Math.random().toString(36).substr(2, 9);
+  // Ratchet WebSocket
+  const conn = new WebSocket('wss://intuitive-imagination-production-8f76.up.railway.app');
 
-  // Pusher
-  const pusher = new Pusher('c922bfca140061b3ea91', { cluster: 'eu' });
-  const channel = pusher.subscribe('chat');
+  conn.onopen = () => {
+    console.log("Connecté!");
+  };
 
-  // Recevoir les messages des autres seulement
-  channel.bind('message', (data) => {
-    if (data.userId !== userId) {
-      ajouterMessage(data.text, 'receiver');
-    }
-  });
+  conn.onmessage = (e) => {
+    ajouterMessage(e.data, 'receiver');
+  };
+
+  conn.onerror = (e) => {
+    console.log("Erreur WebSocket:", e);
+  };
 
   // Envoyer un message
   form.addEventListener('submit', (e) => {
@@ -32,12 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const texte = textarea.value.trim();
     if (!texte) return;
 
-    fetch('send.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: texte, userId: userId })
-    });
-
+    conn.send(texte);
     ajouterMessage(texte, 'sender');
     textarea.value = '';
     textarea.style.height = '50px';
