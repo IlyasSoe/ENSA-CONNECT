@@ -263,6 +263,8 @@ aside {
 
 .entree button[type="submit"] {
     height: 50px;
+    top: 50%;
+    transform: translateY(-50%);
     border-radius: 0 50px 50px 0;
     border: none;
     cursor: pointer;
