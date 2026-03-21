@@ -8,5 +8,6 @@ COPY . .
 
 RUN composer install --working-dir=chat
 
-EXPOSE 8080
+ENV PORT=8080
+
 CMD ["php", "start.php"]
