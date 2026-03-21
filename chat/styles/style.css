@@ -1,0 +1,302 @@
+:root {
+    --white : rgba(255 255 255 / 100%);
+}
+
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+h1 {
+    font-family: "handlee", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+p, span, li, input {
+    font-family: "SN Pro", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+h2, h3, h4 {
+    font-family: "Work Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+.logoI {
+    width: 45px;
+    height: 45px;
+}
+
+body {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 8% 84% 8%;
+    min-height: 100vh;
+    height: 100vh;
+}
+
+
+main aside h2, .texting-user .user-profile {
+    position: sticky;
+    top: 0;
+    background-color: var(--white);
+    padding: 15px;
+
+}
+
+.texting-user .user-profile {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    border-bottom: 1px solid black;
+    /* background-color: #bbb; */
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+}
+
+main aside {
+    overflow-y: auto;
+    background-color: var(--white);
+    width: 400px;
+    box-shadow: -4px 0px 20px rgba(0, 0, 0, 0.1);
+    border-right: 1px solid black;
+}
+
+aside ul {
+    list-style: none;
+    padding: 15px;
+}
+
+aside ul li {
+    padding-block: 10px;
+    height: 100px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 10fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
+    width: 100%;
+    
+}
+
+aside ul .active {
+    background-color: #ddd;
+}
+
+aside ul li img {
+    grid-column: 2 / 3;
+    grid-row: 2 / 4;
+}
+
+aside ul li .user {
+    grid-column: 4 / 6;
+    grid-row: 2 / 3;
+}
+
+aside ul li .lst-msg {
+    grid-column: 4 / 6;
+    grid-row: 3 / 4;
+}
+
+header {
+    grid-column: 1 / 4;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: black;
+    color: white;
+    gap: 30px;
+    width: 100%;
+}
+
+header input {
+    width: 100%;
+    height: 100%;
+    
+    padding: 10px;
+}
+
+nav li:hover {
+    text-decoration: underline;
+}
+
+nav ul {
+    list-style: none;
+}
+
+.recherche {
+    width: 500px;
+    position: relative;
+    height: 40px;
+}
+
+.recherche img {
+    width: 35px;
+    height: 35px;
+    padding: 0;
+}
+
+.recherche button {
+    width: 35px;
+    height: 35px;
+    border: none;
+    position: absolute;
+    cursor: pointer;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 8px;
+}
+
+header nav {
+    float: right;
+}
+
+header ul {
+    display: flex;
+    gap: 30px;
+}
+
+main {
+    grid-row: 2 / 3;
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    grid-template-rows: 100%;
+    padding: 15px;
+}
+
+aside {
+    grid-column: 1 / 2;
+    grid-row: 1 / 3;
+}
+
+.texting-user {
+    display: grid;
+    grid-template-rows: 10% 80% 10%;
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    border-right: 1px solid black;
+}
+
+.texting-user h2 {
+    height: 5%;
+}
+
+.messages {
+    padding: 20px;
+    grid-row: 2 / 3;
+    overflow-y: scroll;
+}
+
+.texting-user p:not(.info) {
+    padding: 20px;
+    width: 400px;
+    background-color: #eee;
+    margin-bottom: 15px;
+    clear: both;
+    position: relative;
+    line-height: 1.5;
+}
+
+.info {
+    font-size: 80%;
+}
+
+.texting-user .sender {
+    float: right;
+    border-radius: 50px 50px 0 50px;
+    background-color: #bbb;
+}
+
+.texting-user .entree {
+    grid-row: 3 / 4;
+}
+
+.texting-user .receiver {
+    border-radius: 50px 50px 50px 0;
+}
+
+.texting-user h2 {
+    grid-row: 1 / 2;
+}
+
+
+.texting-user .sender .date {
+    position: absolute;
+    right: 5%;
+    font-size: 80%;
+}
+
+.texting-user .receiver .date {
+    position: absolute;
+    right: 10%;
+    font-size: 80%;
+}
+
+.entree {
+    width: 70%;
+    display: flex;
+    /* justify-content: center;
+    align-items: center; */
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px;
+}
+
+.entree textarea {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    height: 50px;
+    padding: 15px 100px 15px 15px;
+    border-radius: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    resize: none;
+    overflow: hidden;
+    /* overflow-wrap: break-word; */
+    /* overflow: hidden; */
+}
+
+.entree button[type="submit"] {
+    height: 50px;
+    border-radius: 0 50px 50px 0;
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+    position: absolute;
+    right: 5px;
+    bottom: -2px;
+}
+
+footer {
+    grid-column: 1 / 4;
+    padding: 15px;
+    color: white;
+    background-color: black;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: #e2e8f0b0;
+  border-radius: 50px;
+  border: 2px solid transparent;         /* espace autour du thumb */
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #e2e8f0;
+  /* background-clip: padding-box; */
+}
+
+/* Apparaît quand le parent est en train d'être scrollé */
+*:hover::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+}
