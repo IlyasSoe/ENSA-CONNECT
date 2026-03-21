@@ -8,4 +8,4 @@ COPY . .
 
 RUN composer install --working-dir=chat
 
-CMD php chat/bin/chat-server.php & php -S 0.0.0.0:$PORT -t chat/
+CMD php chat/bin/chat-server.php & php -S 0.0.0.0:$WEB_PORT -t chat/
