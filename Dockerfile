@@ -8,6 +8,4 @@ COPY . .
 
 RUN composer install --working-dir=chat
 
-ENV PORT=8080
-
-CMD ["php", "start.php"]
+CMD php chat/bin/chat-server.php & php -S 0.0.0.0:$PORT -t chat/
