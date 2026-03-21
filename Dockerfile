@@ -8,8 +8,5 @@ COPY . .
 
 RUN composer install --working-dir=chat
 
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
-
 EXPOSE 8080
-CMD ["sh", "-c", "php start.php"]
+CMD ["php", "start.php"]
