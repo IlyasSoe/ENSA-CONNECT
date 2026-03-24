@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $email     = isset($_POST['email'])    ? trim($_POST['email'])    : '';
 $pass      = isset($_POST['password']) ? trim($_POST['password']) : '';
 $user_name = isset($_POST['username']) ? trim($_POST['username']) : '';
+$role_id   = 1; // Default: Etudiant (1=Etudiant, 2=Lauréat, 3=Mentor, 4=Admin)
 
 if (empty($email) || empty($pass) || empty($user_name)) {
     echo json_encode(["error" => "All fields are required."]);
@@ -33,10 +34,10 @@ $token = sha1(uniqid(mt_rand(), true) . uniqid(mt_rand(), true));
 
 try {
     $stmt = $pdo->prepare(
-        "INSERT INTO users (email, password_hash, username, verification_token, is_verified, token_expires_at)
-         VALUES (?, ?, ?, ?, 0, DATE_ADD(NOW(), INTERVAL 24 HOUR))"
+        "INSERT INTO users (email, password_hash, username, role_id, verification_token, is_verified, token_expires_at)
+        VALUES (?, ?, ?, ?, ?, 0, DATE_ADD(NOW(), INTERVAL 24 HOUR))"
     );
-    $stmt->execute([$email, $hashedPassword, $user_name, $token]);
+    $stmt->execute([$email, $hashedPassword, $user_name, $role_id, $token]);
 
     echo json_encode(["success" => "Account created for $user_name! Please verify your email."]);
 
