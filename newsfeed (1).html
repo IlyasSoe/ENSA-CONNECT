@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ENSA Connect | Newsfeed</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "on-tertiary-container": "#78dbc8","on-surface": "#191c1e","primary": "#004359",
+          "primary-container": "#005c78","surface-container-highest": "#e1e3e5",
+          "tertiary-container": "#006054","outline-variant": "#bfc8cd",
+          "on-surface-variant": "#40484d","surface-variant": "#e1e3e5","outline": "#70787d",
+          "on-background": "#191c1e","surface-bright": "#f8f9fc","surface-container-high": "#e6e8eb",
+          "on-secondary-container": "#576670","surface-tint": "#176682","on-primary": "#ffffff",
+          "background": "#f8f9fc","surface-container-low": "#f2f4f6","secondary-container": "#d5e5f1",
+          "surface-container-lowest": "#ffffff","secondary": "#51606a","surface": "#f8f9fc",
+          "surface-dim": "#d8dadd","surface-container": "#eceef0","on-secondary-fixed-variant": "#3a4952",
+          "error": "#ba1a1a"
+        },
+        borderRadius: { DEFAULT:"0.5rem", lg:"0.5rem", xl:"0.75rem", full:"9999px" },
+        fontFamily: { headline:["Manrope"], body:["Inter"], label:["Inter"] }
+      }
+    }
+  }
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; vertical-align:middle; }
+  body { font-family:'Inter',sans-serif; }
+  h1,h2,h3 { font-family:'Manrope',sans-serif; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  .post-card { animation:fadeUp 0.3s ease both; }
+  .post-content.collapsed { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  .filter-chip.active { background:#004359 !important; color:#ffffff !important; }
+  .action-btn.liked { color:#ba1a1a !important; }
+  .comment-section { animation:fadeUp 0.2s ease both; }
+  article.post-card { transition:box-shadow 300ms cubic-bezier(0.4,0,0.2,1); }
+  article.post-card:hover { box-shadow:0 12px 40px rgba(23,102,130,0.08); }
+  .skeleton { background:linear-gradient(90deg,#eceef0 25%,#f2f4f6 50%,#eceef0 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:0.5rem; }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+</style>
+</head>
+<body class="bg-surface text-on-surface">
+
+<!-- TOP NAV -->
+<header class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm">
+  <div class="flex justify-between items-center px-6 h-16 max-w-[1440px] mx-auto">
+    <div class="flex items-center gap-8">
+      <span class="text-xl font-headline font-bold tracking-tighter text-primary">ENSA Connect</span>
+      <div class="hidden lg:flex items-center bg-surface-container-low rounded-full px-4 py-1.5 gap-2 w-80">
+        <span class="material-symbols-outlined text-outline" style="font-size:18px">search</span>
+        <input id="searchInput" class="bg-transparent border-none focus:ring-0 text-sm w-full outline-none placeholder:text-on-surface-variant"
+          placeholder="Search posts or people..." type="text" oninput="PostManager.filter()"/>
+      </div>
+    </div>
+    <nav class="hidden md:flex items-center gap-8 text-sm font-semibold tracking-tight">
+      <a class="text-primary border-b-2 border-primary pb-1" href="#">Network</a>
+      <a class="text-slate-500 hover:text-primary transition-colors" href="../chat/index.html">Messages</a>
+      <a class="text-slate-500 hover:text-primary transition-colors" href="#">Careers</a>
+    </nav>
+    <div class="flex items-center gap-4">
+      <button class="text-on-surface-variant hover:text-primary transition-colors">
+        <span class="material-symbols-outlined">notifications</span>
+      </button>
+      <div id="userAvatar" class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold cursor-pointer">?</div>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-[1440px] mx-auto pt-24 pb-20 px-6 grid grid-cols-1 md:grid-cols-12 gap-8">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="hidden md:block md:col-span-3 lg:col-span-2">
+    <div class="sticky top-24 flex flex-col gap-6">
+      <div class="bg-surface-container-lowest rounded-lg p-5 flex flex-col items-center text-center">
+        <div id="sidebarAvatar" class="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-white text-lg font-bold mb-3">?</div>
+        <h3 id="sidebarName" class="font-headline font-bold text-base text-primary">...</h3>
+        <p id="sidebarRole" class="text-xs text-on-surface-variant font-medium mt-1"></p>
+        <p class="text-[10px] text-outline mt-1 uppercase tracking-widest">ENSA</p>
+      </div>
+      <nav class="flex flex-col gap-1 font-semibold text-sm">
+        <a class="flex items-center gap-3 bg-white text-primary rounded-lg p-3 shadow-sm" href="#">
+          <span class="material-symbols-outlined text-lg">dynamic_feed</span> Feed
+        </a>
+        <a class="flex items-center gap-3 text-slate-600 p-3 hover:bg-surface-container transition-colors rounded-lg" href="#">
+          <span class="material-symbols-outlined text-lg">work</span> Internships
+        </a>
+        <a class="flex items-center gap-3 text-slate-600 p-3 hover:bg-surface-container transition-colors rounded-lg" href="#">
+          <span class="material-symbols-outlined text-lg">workspace_premium</span> PFE Offers
+        </a>
+        <a class="flex items-center gap-3 text-slate-600 p-3 hover:bg-surface-container transition-colors rounded-lg" href="#">
+          <span class="material-symbols-outlined text-lg">group</span> Alumni Directory
+        </a>
+        <!-- logout — calls session_destroy via PHP -->
+        <a href="../backend/logout.php" class="flex items-center gap-3 text-slate-600 p-3 hover:bg-surface-container transition-colors rounded-lg">
+          <span class="material-symbols-outlined text-lg">logout</span> Logout
+        </a>
+      </nav>
+      <button onclick="document.getElementById('createPostModal').classList.remove('hidden')"
+        class="w-full py-2.5 rounded-lg text-sm font-bold text-white tracking-wide"
+        style="background:linear-gradient(135deg,#004359,#005c78)">
+        Post Opportunity
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN FEED -->
+  <section class="md:col-span-6 lg:col-span-7 flex flex-col gap-0">
+
+    <!-- Create Post trigger -->
+    <div class="bg-surface-container-lowest rounded-lg p-4 mb-6 flex items-center gap-3 cursor-pointer"
+      onclick="document.getElementById('createPostModal').classList.remove('hidden')">
+      <div id="createPostAvatar" class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold flex-shrink-0">?</div>
+      <div class="flex-1 bg-surface-container-low rounded-full px-4 py-2.5 text-sm text-on-surface-variant hover:bg-surface-container transition-colors">
+        Share a project, an internship offer, or an insight...
+      </div>
+    </div>
+
+    <!-- Filter chips — TYPE: status/offer  +  category: internship/pfe/mentorship/experience -->
+    <div class="flex gap-2 mb-6 flex-wrap">
+      <button class="filter-chip active px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-surface-container-high text-on-secondary-container transition-all" onclick="PostManager.setFilter('all',this)">All</button>
+      <button class="filter-chip px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-surface-container-high text-on-secondary-container transition-all" onclick="PostManager.setFilter('offer',this)">Offers</button>
+      <button class="filter-chip px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-surface-container-high text-on-secondary-container transition-all" onclick="PostManager.setFilter('status',this)">Status</button>
+      <button class="filter-chip px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-surface-container-high text-on-secondary-container transition-all" onclick="PostManager.setFilter('internship',this)">Internship</button>
+      <button class="filter-chip px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-surface-container-high text-on-secondary-container transition-all" onclick="PostManager.setFilter('pfe',this)">PFE</button>
+      <button class="filter-chip px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-surface-container-high text-on-secondary-container transition-all" onclick="PostManager.setFilter('mentorship',this)">Mentorship</button>
+    </div>
+
+    <!-- Loading skeleton -->
+    <div id="loadingSkeleton" class="space-y-4">
+      <div class="bg-surface-container-lowest rounded-lg p-6"><div class="flex gap-3 mb-4"><div class="skeleton w-11 h-11 rounded-lg flex-shrink-0"></div><div class="flex-1"><div class="skeleton h-4 w-32 mb-2"></div><div class="skeleton h-3 w-48"></div></div></div><div class="skeleton h-3 w-full mb-2"></div><div class="skeleton h-3 w-4/5 mb-2"></div><div class="skeleton h-3 w-3/5"></div></div>
+      <div class="bg-surface-container-lowest rounded-lg p-6"><div class="flex gap-3 mb-4"><div class="skeleton w-11 h-11 rounded-lg flex-shrink-0"></div><div class="flex-1"><div class="skeleton h-4 w-28 mb-2"></div><div class="skeleton h-3 w-40"></div></div></div><div class="skeleton h-3 w-full mb-2"></div><div class="skeleton h-3 w-3/5"></div></div>
+    </div>
+
+    <div id="feed" class="flex flex-col gap-0 hidden"></div>
+
+    <button id="loadMoreBtn" onclick="PostManager.loadMore()"
+      class="mt-6 w-full py-3 rounded-lg text-sm font-semibold text-on-surface-variant bg-surface-container-low hover:bg-surface-container transition-colors hidden">
+      Load more posts
+    </button>
+  </section>
+
+  <!-- RIGHT SIDEBAR -->
+  <aside class="hidden lg:block lg:col-span-3">
+    <div class="sticky top-24 flex flex-col gap-6">
+      <div class="bg-surface-container-low rounded-lg p-5">
+        <h2 class="font-headline font-extrabold text-primary text-sm mb-4 tracking-tight">Suggested Mentors</h2>
+        <div class="flex flex-col gap-4">
+          <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-xs font-bold text-primary">LH</div><div class="flex-1"><p class="text-xs font-bold text-on-surface">Leila Hassan</p><p class="text-[10px] text-on-surface-variant">Software Lead at Google</p></div><button class="text-primary hover:bg-white p-1 rounded-full"><span class="material-symbols-outlined text-lg">person_add</span></button></div>
+          <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-xs font-bold text-primary">YA</div><div class="flex-1"><p class="text-xs font-bold text-on-surface">Yassine Amrani</p><p class="text-[10px] text-on-surface-variant">Project Manager at MASEN</p></div><button class="text-primary hover:bg-white p-1 rounded-full"><span class="material-symbols-outlined text-lg">person_add</span></button></div>
+        </div>
+      </div>
+      <div class="bg-surface-container-low rounded-lg p-5">
+        <h2 class="font-headline font-extrabold text-primary text-sm mb-4 tracking-tight">ENSA Events</h2>
+        <div class="flex flex-col gap-3">
+          <div class="bg-white/60 p-3 rounded-lg flex items-start gap-3"><div class="bg-primary-container text-white px-2 py-1 rounded text-center min-w-[36px]"><p class="text-[9px] font-bold">MAY</p><p class="text-sm font-extrabold">14</p></div><div><p class="text-xs font-bold text-on-surface">GITEX Africa Expo</p><p class="text-[10px] text-on-surface-variant">Marrakech</p></div></div>
+          <div class="bg-white/60 p-3 rounded-lg flex items-start gap-3"><div class="bg-primary-container text-white px-2 py-1 rounded text-center min-w-[36px]"><p class="text-[9px] font-bold">JUN</p><p class="text-sm font-extrabold">02</p></div><div><p class="text-xs font-bold text-on-surface">Soft Skills Workshop</p><p class="text-[10px] text-on-surface-variant">Online Webinar</p></div></div>
+        </div>
+      </div>
+      <div class="px-1">
+        <h2 class="font-headline font-extrabold text-primary text-sm mb-3 tracking-tight">Trending Topics</h2>
+        <div class="flex flex-wrap gap-2">
+          <span class="bg-surface-container-high text-on-secondary-fixed-variant px-3 py-1 rounded-full text-[10px] font-semibold cursor-pointer hover:bg-primary hover:text-white transition-colors">#EngineeringMaroc</span>
+          <span class="bg-surface-container-high text-on-secondary-fixed-variant px-3 py-1 rounded-full text-[10px] font-semibold cursor-pointer hover:bg-primary hover:text-white transition-colors">#PFEOffers</span>
+          <span class="bg-surface-container-high text-on-secondary-fixed-variant px-3 py-1 rounded-full text-[10px] font-semibold cursor-pointer hover:bg-primary hover:text-white transition-colors">#Innovation</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<!-- CREATE POST MODAL -->
+<div id="createPostModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-6">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="font-headline font-bold text-primary text-lg">New Post</h3>
+      <button onclick="document.getElementById('createPostModal').classList.add('hidden')" class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <form id="createPostForm">
+      <!-- TYPE matches DB enum('status','offer') -->
+      <select id="postType" name="TYPE" class="w-full mb-3 bg-surface-container-low rounded-lg px-4 py-2 text-sm border-none outline-none focus:ring-2 focus:ring-primary/20">
+        <option value="status">Status</option>
+        <option value="offer">Offer (Internship / PFE / Mentorship)</option>
+      </select>
+      <!-- category: extra field for frontend filtering -->
+      <select id="postCategory" name="category" class="w-full mb-3 bg-surface-container-low rounded-lg px-4 py-2 text-sm border-none outline-none focus:ring-2 focus:ring-primary/20">
+        <option value="">— Category (optional) —</option>
+        <option value="internship">Internship</option>
+        <option value="pfe">PFE</option>
+        <option value="mentorship">Mentorship</option>
+        <option value="experience">Experience</option>
+      </select>
+      <textarea id="postContent" name="content" rows="4" placeholder="Share your insight, opportunity, or experience..."
+        class="w-full mb-3 bg-surface-container-low rounded-lg px-4 py-3 text-sm border-none outline-none focus:ring-2 focus:ring-primary/20 resize-none"></textarea>
+      <input type="url" id="postImage" name="image_url" placeholder="Image URL (optional)"
+        class="w-full mb-4 bg-surface-container-low rounded-lg px-4 py-2 text-sm border-none outline-none focus:ring-2 focus:ring-primary/20"/>
+      <div id="postError" class="text-xs text-red-600 mb-3 hidden"></div>
+      <button type="submit" class="w-full py-2.5 rounded-lg text-sm font-bold text-white" style="background:linear-gradient(135deg,#004359,#005c78)">Publish</button>
+    </form>
+  </div>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-2xl md:hidden bg-white border-t border-slate-100 shadow-lg h-16 flex justify-around items-center px-4">
+  <a class="flex flex-col items-center text-primary bg-teal-50 rounded-xl px-3 py-1" href="#"><span class="material-symbols-outlined text-lg">home</span><span class="text-[10px] font-bold">Home</span></a>
+  <a class="flex flex-col items-center text-slate-400" href="#"><span class="material-symbols-outlined text-lg">search</span><span class="text-[10px] font-bold">Search</span></a>
+  <a class="flex flex-col items-center text-slate-400" href="../chat/index.html"><span class="material-symbols-outlined text-lg">chat</span><span class="text-[10px] font-bold">Chat</span></a>
+  <a class="flex flex-col items-center text-slate-400" href="#"><span class="material-symbols-outlined text-lg">person</span><span class="text-[10px] font-bold">Profile</span></a>
+</nav>
+
+<script>
+// ─────────────────────────────────────────────
+// CONSTANTS — match DB schema exactly
+// ─────────────────────────────────────────────
+// role_id: 1=Etudiant, 2=Lauréat, 3=Mentor, 4=Admin  (from schema.sql)
+const ROLE_MAP = { 1:'Etudiant', 2:'Lauréat', 3:'Mentor', 4:'Admin' };
+
+// TYPE enum('status','offer') + category for frontend filter
+const CATEGORY_LABEL = {
+  offer:'Offer', status:'Status',
+  internship:'Internship', pfe:'PFE',
+  mentorship:'Mentorship', experience:'Experience'
+};
+
+const AVATAR_COLORS = [
+  {bg:'#d5e5f1',color:'#004359'},{bg:'#eceef0',color:'#004359'},
+  {bg:'#ffdcbe',color:'#5d3400'},{bg:'#c6e7ff',color:'#004359'},
+  {bg:'#d5e5f1',color:'#004d65'}
+];
+const getAvatarColor = id => AVATAR_COLORS[(id||0) % AVATAR_COLORS.length];
+
+// XSS protection — always sanitize before innerHTML
+function sanitize(str) {
+  const d = document.createElement('div');
+  d.textContent = str || '';
+  return d.innerHTML;
+}
+function getInitials(name) {
+  return (name||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+}
+function formatTime(ts) {
+  if (!ts) return '';
+  const diff = Math.floor((Date.now()-new Date(ts))/1000);
+  if (diff<60) return 'just now';
+  if (diff<3600) return Math.floor(diff/60)+'m ago';
+  if (diff<86400) return Math.floor(diff/3600)+'h ago';
+  return Math.floor(diff/86400)+'d ago';
+}
+
+// ─────────────────────────────────────────────
+// SESSION — reads from backend/session.php
+// which echoes $_SESSION['user_id'] & ['username']
+// set by login.php
+// ─────────────────────────────────────────────
+let currentUser = { id:null, username:'?', role_id:1 };
+
+async function loadSession() {
+  try {
+    const res = await fetch('../backend/session.php');
+    const data = await res.json();
+    if (data.status === 'ok') {
+      currentUser = data.user;
+    } else {
+      // Not logged in → redirect to login
+      window.location.href = '../backend/login.php';
+      return;
+    }
+  } catch {
+    // Backend not ready yet — demo mode
+    currentUser = { id:0, username:'Demo User', role_id:1 };
+  }
+  const initials = getInitials(currentUser.username);
+  ['userAvatar','sidebarAvatar','createPostAvatar'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = initials;
+  });
+  document.getElementById('sidebarName').textContent = currentUser.username;
+  document.getElementById('sidebarRole').textContent = ROLE_MAP[currentUser.role_id]||'Member';
+}
+
+// ─────────────────────────────────────────────
+// POST MANAGER
+// ─────────────────────────────────────────────
+const PAGE_SIZE = 5;
+
+const PostManager = (() => {
+  let posts = [], filtered = [], page = 1, currentFilter = 'all';
+
+  const icons = {
+    heart: `<span class="material-symbols-outlined" style="font-size:18px">favorite</span>`,
+    heartFilled: `<span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;font-size:18px">favorite</span>`,
+    comment: `<span class="material-symbols-outlined" style="font-size:18px">comment</span>`,
+    share: `<span class="material-symbols-outlined" style="font-size:18px">share</span>`,
+    send: `<span class="material-symbols-outlined" style="font-size:16px">send</span>`
+  };
+
+  // Normalize API row → frontend post object
+  // DB fields: id, author_id, content, image_url, TYPE, created_at
+  // Joined:    username, role_id, avatar_url, likes_count, comments_count, user_liked
+  function normalize(raw) {
+    const av = getAvatarColor(raw.author_id||raw.id);
+    const category = raw.category || raw.TYPE || 'status';
+    return {
+      id: raw.id,
+      author: sanitize(raw.username||'Unknown'),
+      initials: getInitials(raw.username),
+      role: ROLE_MAP[raw.role_id]||'Member',
+      avatarBg: av.bg, avatarColor: av.color,
+      avatarUrl: raw.avatar_url||null,
+      time: formatTime(raw.created_at),
+      category,
+      categoryLabel: CATEGORY_LABEL[category]||category,
+      content: sanitize(raw.content),
+      image: raw.image_url||null,
+      likes: parseInt(raw.likes_count)||0,
+      liked: raw.user_liked==='1'||raw.user_liked===true,
+      commentsCount: parseInt(raw.comments_count)||0,
+      comments: [], showComments:false,
+      expanded:false, newComment:'',
+      TYPE: raw.TYPE||'status',
+      hasApply: raw.TYPE==='offer'
+    };
+  }
+
+  // fetch from backend/posts.php
+  // Expected response: { posts: [...], total: N }
+  async function fetchPosts() {
+    try {
+      const q = document.getElementById('searchInput').value.trim();
+      const params = new URLSearchParams({ filter:currentFilter, page, limit:PAGE_SIZE, search:q });
+      const res = await fetch(`../backend/posts.php?${params}`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      const rows = (data.posts||data).map(normalize);
+      if (page===1) { posts=rows; filtered=rows; }
+      else { posts=[...posts,...rows]; filtered=[...filtered,...rows]; }
+      render(rows.length>=PAGE_SIZE);
+    } catch {
+      // Demo mode when backend not ready
+      loadDemo();
+    }
+  }
+
+  function localFilter(list) {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    return list.filter(p => {
+      const mf = currentFilter==='all' || p.category===currentFilter || p.TYPE===currentFilter;
+      const ms = !q || p.author.toLowerCase().includes(q) || p.content.toLowerCase().includes(q);
+      return mf && ms;
+    });
+  }
+
+  function loadDemo() {
+    // Demo data — fields match DB schema
+    const demo = [
+      {id:1,author_id:1,username:"Dr. Karim Tazi",role_id:3,content:"Exciting opportunity for final year students! We are looking for 3 PFE interns to join our research lab on Distributed Cloud Systems. Passionate about Go, Kubernetes, and high-scale architectures? Let us talk.",image_url:"https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=640&q=80",TYPE:"offer",category:"pfe",created_at:new Date(Date.now()-7200000).toISOString(),likes_count:48,comments_count:1,user_liked:false},
+      {id:2,author_id:2,username:"Sara Berrada",role_id:2,content:"I still remember my first week at ENSA. The jump from high school to engineering logic was tough! For the juniors struggling: stay consistent. It is not about being the smartest; it is about not giving up.\n\nFeel free to DM if you need advice on balancing clubs and studies.",image_url:null,TYPE:"status",category:"experience",created_at:new Date(Date.now()-18000000).toISOString(),likes_count:156,comments_count:34,user_liked:false},
+      {id:3,author_id:3,username:"Omar Mansouri",role_id:2,content:"Opening 5 slots for Summer Internship in AI and Data Engineering. We prioritize candidates with strong analytical skills. Join us to build the next generation of logistics tools.",image_url:null,TYPE:"offer",category:"internship",created_at:new Date(Date.now()-86400000).toISOString(),likes_count:89,comments_count:0,user_liked:false},
+      {id:4,author_id:4,username:"Hamza Ouali",role_id:3,content:"Open to mentoring 2nd-year students in backend development. I have been working with Node.js and PostgreSQL professionally. We can do bi-weekly 30min calls. DM me with a short intro.",image_url:null,TYPE:"offer",category:"mentorship",created_at:new Date(Date.now()-172800000).toISOString(),likes_count:67,comments_count:2,user_liked:false},
+      {id:5,author_id:5,username:"Kawtar Ait Said",role_id:1,content:"Finally got my offer letter from Capgemini Morocco! Starting in April as a DevOps intern. Huge thanks to everyone who gave me feedback on my CV. This network is really something special.",image_url:null,TYPE:"status",category:"experience",created_at:new Date(Date.now()-259200000).toISOString(),likes_count:112,comments_count:0,user_liked:false}
+    ];
+    posts = demo.map(normalize);
+    filtered = localFilter(posts);
+    render(false);
+  }
+
+  function renderPost(post, idx) {
+    const isLong = post.content.length > 240;
+    const colClass = (isLong&&!post.expanded)?' collapsed':'';
+    const avatarHtml = post.avatarUrl
+      ? `<img src="${sanitize(post.avatarUrl)}" class="w-11 h-11 rounded-lg object-cover flex-shrink-0" alt="">`
+      : `<div class="w-11 h-11 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0" style="background:${post.avatarBg};color:${post.avatarColor}">${post.initials}</div>`;
+    const imgHtml = post.image
+      ? `<div class="overflow-hidden rounded-lg mb-4 aspect-video"><img src="${sanitize(post.image)}" loading="lazy" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" alt=""></div>`
+      : '';
+    const applyBtn = post.hasApply
+      ? `<button class="ml-auto px-5 py-1.5 rounded-lg text-xs font-bold text-white" style="background:linear-gradient(135deg,#004359,#005c78)">Apply Now</button>`
+      : '';
+    const commentsHtml = post.showComments ? `
+      <div class="comment-section mt-4 pt-4 border-t border-surface-container space-y-3">
+        ${post.comments.map(c=>`
+          <div class="flex gap-3 items-start">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0" style="background:${c.bg};color:${c.color}">${sanitize(c.initials)}</div>
+            <div class="bg-surface-container-low rounded-lg px-3 py-2 flex-1">
+              <p class="text-xs font-bold text-on-surface mb-0.5">${sanitize(c.author)}</p>
+              <p class="text-xs text-on-surface-variant leading-relaxed">${sanitize(c.text)}</p>
+            </div>
+          </div>`).join('')}
+        <div class="flex gap-2 items-center mt-2">
+          <div class="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">${getInitials(currentUser.username)}</div>
+          <input id="cinput-${post.id}" type="text" placeholder="Write a comment…" maxlength="500"
+            class="flex-1 bg-surface-container-low rounded-full px-4 py-2 text-xs border-none outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+            value="${sanitize(post.newComment)}"
+            oninput="PostManager.updateComment(${post.id},this.value)"
+            onkeydown="if(event.key==='Enter')PostManager.addComment(${post.id})">
+          <button onclick="PostManager.addComment(${post.id})"
+            class="w-8 h-8 rounded-full flex items-center justify-center text-white flex-shrink-0 hover:opacity-80 transition-opacity"
+            style="background:linear-gradient(135deg,#004359,#005c78)">${icons.send}</button>
+        </div>
+      </div>` : '';
+
+    return `
+      <article class="post-card bg-surface-container-lowest rounded-lg group mb-4" style="animation-delay:${idx*0.07}s">
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-4">
+            <div class="flex gap-3 items-center">
+              ${avatarHtml}
+              <div>
+                <h4 class="font-headline font-bold text-on-surface text-sm">${post.author}</h4>
+                <p class="text-xs text-on-surface-variant">${post.role} • ${post.time}</p>
+              </div>
+            </div>
+            <span class="bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex-shrink-0">${sanitize(post.categoryLabel)}</span>
+          </div>
+          <div class="post-content text-sm text-on-surface leading-relaxed mb-3${colClass}" style="white-space:pre-line">${post.content}</div>
+          ${isLong?`<button onclick="PostManager.toggleExpand(${post.id})" class="text-xs font-semibold text-primary hover:underline mb-3 block">${post.expanded?'Show less':'Show more'}</button>`:''}
+          ${imgHtml}
+          <div class="flex items-center gap-1 pt-2">
+            <button onclick="PostManager.toggleLike(${post.id})"
+              class="action-btn ${post.liked?'liked':''} flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-surface-container text-on-secondary-container text-xs font-semibold transition-colors">
+              ${post.liked?icons.heartFilled:icons.heart}<span>${post.likes}</span>
+            </button>
+            <button onclick="PostManager.toggleComments(${post.id})"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-surface-container text-on-secondary-container text-xs font-semibold transition-colors">
+              ${icons.comment}<span>${post.commentsCount}</span>
+            </button>
+            <button onclick="PostManager.sharePost(${post.id})"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-surface-container text-on-secondary-container text-xs font-semibold transition-colors">
+              ${icons.share}
+            </button>
+            ${applyBtn}
+          </div>
+          ${commentsHtml}
+        </div>
+      </article>`;
+  }
+
+  function render(hasMore) {
+    document.getElementById('loadingSkeleton').classList.add('hidden');
+    const feed = document.getElementById('feed');
+    feed.classList.remove('hidden');
+    const visible = filtered.slice(0, page*PAGE_SIZE);
+    feed.innerHTML = visible.length
+      ? visible.map((p,i)=>renderPost(p,i)).join('')
+      : `<div class="py-16 text-center text-on-surface-variant text-sm">No posts found.</div>`;
+    const btn = document.getElementById('loadMoreBtn');
+    btn.classList.remove('hidden');
+    const allLoaded = !hasMore && filtered.length<=page*PAGE_SIZE;
+    btn.disabled = allLoaded;
+    btn.textContent = allLoaded?'All posts loaded':'Load more posts';
+    btn.style.opacity = allLoaded?'0.4':'1';
+  }
+
+  return {
+    async init() { await fetchPosts(); },
+    filter() { page=1; filtered=localFilter(posts); fetchPosts(); },
+    setFilter(cat, el) {
+      currentFilter=cat;
+      document.querySelectorAll('.filter-chip').forEach(b=>b.classList.remove('active'));
+      el.classList.add('active');
+      page=1; this.filter();
+    },
+    loadMore() { page++; fetchPosts(); },
+    toggleExpand(id) {
+      const p=posts.find(x=>x.id===id);
+      if(p){p.expanded=!p.expanded;render(false);}
+    },
+    // sends to backend/react.php → inserts into reactions table
+    async toggleLike(id) {
+      const p=posts.find(x=>x.id===id);
+      if(!p) return;
+      p.liked=!p.liked; p.likes+=p.liked?1:-1; render(false);
+      try {
+        await fetch('../backend/react.php',{
+          method:'POST',
+          headers:{'Content-Type':'application/x-www-form-urlencoded'},
+          body:`post_id=${id}&type=like&action=${p.liked?'add':'remove'}`
+        });
+      } catch {}
+    },
+    // fetches from backend/comments.php?post_id=X
+    async toggleComments(id) {
+      const p=posts.find(x=>x.id===id);
+      if(!p) return;
+      p.showComments=!p.showComments;
+      if(p.showComments&&p.comments.length===0){
+        try {
+          const res=await fetch(`../backend/comments.php?post_id=${id}`);
+          const data=await res.json();
+          p.comments=(data.comments||[]).map(c=>({
+            author:sanitize(c.username),
+            initials:getInitials(c.username),
+            bg:getAvatarColor(c.user_id).bg,
+            color:getAvatarColor(c.user_id).color,
+            text:sanitize(c.content)
+          }));
+          p.commentsCount=p.comments.length;
+        } catch {}
+      }
+      render(false);
+      if(p.showComments) setTimeout(()=>document.getElementById(`cinput-${id}`)?.focus(),50);
+    },
+    updateComment(id,val){const p=posts.find(x=>x.id===id);if(p)p.newComment=val;},
+    // POST to backend/comments.php → inserts comment row
+    async addComment(id) {
+      const p=posts.find(x=>x.id===id);
+      if(!p) return;
+      const text=(p.newComment||'').trim();
+      if(!text) return;
+      const av=getAvatarColor(currentUser.id||0);
+      p.comments.push({author:currentUser.username||'You',initials:getInitials(currentUser.username),bg:av.bg,color:av.color,text:sanitize(text)});
+      p.commentsCount++; p.newComment=''; render(false);
+      try {
+        await fetch('../backend/comments.php',{
+          method:'POST',
+          headers:{'Content-Type':'application/x-www-form-urlencoded'},
+          body:`post_id=${id}&content=${encodeURIComponent(text)}`
+        });
+      } catch {}
+    },
+    sharePost(id) {
+      const p=posts.find(x=>x.id===id);
+      if(!p) return;
+      navigator.share?.({title:`${p.author} on ENSA Connect`,text:p.content.slice(0,100)})
+        || navigator.clipboard?.writeText(window.location.href+'#post-'+id);
+    }
+  };
+})();
+
+// ─────────────────────────────────────────────
+// CREATE POST — submits to backend/posts.php
+// body: content, image_url, TYPE, category
+// ─────────────────────────────────────────────
+document.getElementById('createPostForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const content = document.getElementById('postContent').value.trim();
+  const errEl = document.getElementById('postError');
+  errEl.classList.add('hidden');
+  if(!content){ errEl.textContent='Content is required.'; errEl.classList.remove('hidden'); return; }
+  try {
+    const res = await fetch('../backend/posts.php',{
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:new URLSearchParams({
+        content,
+        image_url: document.getElementById('postImage').value.trim(),
+        TYPE: document.getElementById('postType').value,
+        category: document.getElementById('postCategory').value
+      })
+    });
+    const data = await res.json();
+    if(data.error) throw new Error(data.error);
+    document.getElementById('createPostModal').classList.add('hidden');
+    document.getElementById('createPostForm').reset();
+    PostManager.setFilter('all', document.querySelector('.filter-chip'));
+  } catch(err) {
+    errEl.textContent = err.message||'Failed to post. Try again.';
+    errEl.classList.remove('hidden');
+  }
+});
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+(async()=>{
+  await loadSession();
+  await PostManager.init();
+})();
+</script>
+</body>
+</html>
