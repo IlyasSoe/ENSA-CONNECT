@@ -14,7 +14,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    min-height: 100vh;
+    min-height: 100dvh;
     background-color: var(--bodyBc);
 }
 
@@ -24,7 +24,7 @@ main {
     /* color: white; */
     background-image: linear-gradient(to right top, rgb(255, 242, 105), rgb(144, 240, 230));
     box-shadow: 0 0 16px rgba(0 0 0 / 30%);
-    min-height: max(100vh, 100%);
+    min-height: max(100dvh, 100%);
     min-width: 100vw;
     position: relative;
     
