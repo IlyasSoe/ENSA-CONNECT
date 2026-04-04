@@ -1,43 +1,61 @@
 <?php
 /**
- * XSSProtection.php
- * Nettoie les données contre les attaques XSS.
+ * RateLimiter.php
+ * Limite chaque utilisateur à 10 posts maximum par heure.
+ *
+ * Comment ça marche ?
+ * On compte les posts de l'utilisateur dans la dernière heure.
+ * Si le nombre atteint 10 → on bloque et on retourne une erreur 429.
+ *
+ * Colonne utilisée : author_id (selon le schéma de Norhane)
  */
-class XSSProtection
+class RateLimiter
 {
-    public static function sanitize($data)
+    private $db;
+    private $maxRequests = 10;   // Max 10 posts
+    private $timeWindow  = 3600; // Par heure (3600 secondes)
+ 
+    public function __construct($db)
     {
-        $data = trim($data);
-        $data = stripslashes($data);
-        $data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
-        return $data;
+        $this->db = $db;
     }
-
-    public static function sanitizeArray($dataArray)
+ 
+    /**
+     * Vérifie si l'utilisateur peut encore poster
+     * @return bool true = autorisé, false = bloqué
+     */
+    public function isAllowed($userId)
     {
-        $cleaned = array();
-        foreach ($dataArray as $key => $value) {
-            if (is_array($value)) {
-                $cleaned[$key] = self::sanitizeArray($value);
-            } else {
-                $cleaned[$key] = self::sanitize((string)$value);
-            }
-        }
-        return $cleaned;
+        return $this->getRecentPostCount($userId) < $this->maxRequests;
     }
-
-    public static function validatePostContent($content)
+ 
+    /**
+     * Compte les posts de l'utilisateur dans la dernière heure
+     */
+    public function getRecentPostCount($userId)
     {
-        $content = self::sanitize($content);
-
-        if (empty($content)) {
-            return array('valid' => false, 'content' => '', 'error' => 'Le contenu ne peut pas être vide.');
-        }
-
-        if (strlen($content) > 5000) {
-            return array('valid' => false, 'content' => '', 'error' => 'Le contenu ne peut pas dépasser 5000 caractères.');
-        }
-
-        return array('valid' => true, 'content' => $content, 'error' => '');
+        $oneHourAgo = date('Y-m-d H:i:s', time() - $this->timeWindow);
+ 
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*)
+            FROM posts
+            WHERE author_id = :author_id
+              AND created_at >= :one_hour_ago
+        ");
+ 
+        $stmt->execute(array(
+            ':author_id'   => $userId,
+            ':one_hour_ago' => $oneHourAgo
+        ));
+ 
+        return (int) $stmt->fetchColumn();
+    }
+ 
+    /**
+     * Retourne le nombre de posts restants pour cette heure
+     */
+    public function getRemainingPosts($userId)
+    {
+        return max(0, $this->maxRequests - $this->getRecentPostCount($userId));
     }
 }
