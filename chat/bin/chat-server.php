@@ -1,22 +1,21 @@
 <?php
+use Ratchet\Server\IoServer;
+use Ratchet\Http\HttpServer;
+use Ratchet\WebSocket\WsServer;
+use MyApp\Chat;
 
+require dirname(__DIR__) . "/vendor/autoload.php";
 
-    use Ratchet\Server\IoServer;
-    use Ratchet\Http\HttpServer;
-    use Ratchet\WebSocket\WsServer;
-    use MyApp\Chat;
+$port = (int)(getenv('PORT') ?: 9090);
+echo "Ratchet starting on port: $port\n";
 
-    require dirname(__DIR__) . "/vendor/autoload.php";
+$server = IoServer::factory(
+    new HttpServer(
+        new WsServer(
+            new Chat()
+        )
+    ),
+    $port
+);
 
-    $server = IoServer::factory(
-        new HttpServer (
-            new WsServer (
-                new Chat()
-            )
-        ),
-        8080
-    );
-
-
-    $server->run();
-?>
+$server->run();

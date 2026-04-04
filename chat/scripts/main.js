@@ -8,41 +8,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Auto-resize textarea
   textarea.addEventListener('input', () => {
-    textarea.style.height = '50px';
+    textarea.style.height = '60px';
     textarea.style.height = textarea.scrollHeight + 'px';
   });
 
-  // WebSocket
-  const conn = new WebSocket('ws://localhost:8080');
+  // Ratchet WebSocket
+  const conn = new WebSocket('wss://intuitive-imagination-production-8f76.up.railway.app');
 
   conn.onopen = () => {
     console.log("Connecté!");
   };
 
-  // Recevoir un message
   conn.onmessage = (e) => {
     ajouterMessage(e.data, 'receiver');
+  };
+
+  conn.onerror = (e) => {
+    console.log("Erreur WebSocket:", e);
   };
 
   // Envoyer un message
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-
     const texte = textarea.value.trim();
     if (!texte) return;
 
     conn.send(texte);
-    ajouterMessage(texte, 'sender');  // afficher localement
-
-    // Reset textarea
+    ajouterMessage(texte, 'sender');
     textarea.value = '';
-    textarea.style.height = '50px';
+    textarea.style.height = '60px';
   });
 
   function ajouterMessage(texte, type) {
     const now = new Date();
-    const date = `${now.toLocaleDateString()} ${now.getHours()}h ${String(now.getMinutes()).padStart(2, '0')}`;
-
+    const date = `${now.toLocaleDateString()} ${now.getHours()}h${String(now.getMinutes()).padStart(2, '0')}`;
     const p = document.createElement('p');
     p.className = type;
     p.innerHTML = `
@@ -50,9 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
       <br>
       <span class="date">${date}</span>
     `;
-
     msg.appendChild(p);
-    msg.scrollTop = msg.scrollHeight;  // scroll en bas
+    msg.scrollTop = msg.scrollHeight;
   }
 
 });
