@@ -92,7 +92,7 @@ input {
     padding: 15px;
     margin-block: 10px;
     border-radius: 20px;
-    width: 380px;
+    width: min(380px, 80vw);
     /* max-width: 80%; */
     outline: none;
     border: none;
