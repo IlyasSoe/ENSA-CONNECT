@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Handlee&family=SN+Pro:ital,wght@0,200..900;1,200..900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <title>s'inscrire | Ensa Connect</title>
+
+    <script src="scripts/main.js" defer></script>
+</head>
+<body>
+
+    <header hidden>
+        <h1>Ensa Connect</h1>
+    </header>
+
+    <main>
+
+        <section>
+            <h2 class="titrePrincipale">Ensa Connect</h2>
+            <h2>Créer un compte</h2>
+            <form action="../../API/AUTH/register.php" method="post">
+                <p>
+                    <label for="nom">Nom complet *</label>
+                    <input type="text" id="nom" name="nom" pattern="^[a-zA-ZÀ-ÿ\s\-']{3,50}$" title="Nom complet : lettres uniquement, 3 à 50 caractères" required>
+                </p>
+
+                <p>
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" pattern="^[a-zA-Z0-9._%+\-]+@uca\.ac\.ma$" title="Utilisez uniquement une adresse email UCA (@uca.ac.ma)" required>
+                </p>
+
+                <p>
+                    <label for="mdp">Mot de passe *</label>
+                    <section class="password">   
+                        <input type="password" id="mdp" name="mdp" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\-_#^])[A-Za-z\d@$!%*?&\-_#^]{8,}$" title="Min 8 caractères, une majuscule, une minuscule, un chiffre, un caractère spécial (@$!%*?&-_#^)" required>
+                        <img src="images/eye.svg" alt="" title="show">
+                    </section>
+                    
+                </p>
+
+                <input type="submit" value="s'inscrire">
+            </form>
+
+            <section class="others"> 
+                <p>
+                    tu as déjà un compte ? <a href="#">se connecter</a>
+                </p>
+                
+                <p>
+                    <a href="#">les conditions d'utilisation</a>
+                </p>
+                
+            </section>
+        </section>
+
+        <section class="largeScreenLg">
+        </section>
+        
+    </main>
+
+    <footer hidden>
+        <p>
+            Ensa Connect, tous les droits sont conservés &copy; 2026
+        </p>
+    </footer>
+    
+</body>
+</html>

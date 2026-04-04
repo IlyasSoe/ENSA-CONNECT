@@ -1,0 +1,208 @@
+:root {
+    --headBc: rgba(0 0 0);
+    --headC: rgba(255 255 255);
+    --bodyBc: rgba(0 0 0 / 30%);
+}
+
+*, *::after, *::before {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--bodyBc);
+}
+
+main {
+    padding: 20px;
+    background-color: black;
+    /* color: white; */
+    background-image: linear-gradient(to right top, rgb(255, 242, 105), rgb(144, 240, 230));
+    box-shadow: 0 0 16px rgba(0 0 0 / 30%);
+    min-height: max(100vh, 700px);
+    min-width: 100vw;
+    position: relative;
+
+    
+}
+
+.largeScreenLg {
+    display: none;
+}
+
+
+
+main .others {
+    position: absolute;
+    bottom: 20px;
+    width: 90%;
+    font-size: .9rem;
+    font-weight: bold;
+}
+
+.others > * {
+    margin-block: 5px;
+}
+
+.password {
+    position: relative;
+}
+
+.password img {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 20px;
+    cursor: pointer;
+}
+
+
+
+/* header, footer {
+    background-color: var(--headBc);
+    color: var(--headC);
+    padding: 15px;
+} */
+
+
+h1, .titrePrincipale {
+    font-family: "handlee", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+h2, h3, h4 {
+    font-family: "Work Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+p, span, li, input {
+    font-family: "SN Pro", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+}
+
+input {
+    padding: 15px;
+    margin-block: 10px;
+    border-radius: 20px;
+    width: 380px;
+    /* max-width: 80%; */
+    outline: none;
+    border: none;
+}
+
+
+label {
+    display: block;
+    color: rgba(0 0 0 / 80%);
+    margin-left: 15px;
+    font-size: 0.9rem;
+}
+
+form {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-block: 25px;
+}
+
+h2:not(.titrePrincipale) {
+    display: block;
+    padding: 40px;
+    text-align: center;
+}
+
+input[type="submit"] {
+    background-color: rgb(255, 255, 78);
+    padding: 15px;
+    font-weight: bold;
+}
+
+input[type="submit"]:hover {
+    background-color: rgb(255, 255, 0);
+    transition: .5s;
+    cursor: pointer;
+}
+
+@media (min-width: 675px) {
+    main {
+        min-height: max(80vh, 600px);
+        min-width: 60vw;
+        /* transition: .5s; */
+        border-radius: 30px;
+    }
+
+    form {
+        margin-block: 0;
+    }
+
+    input {
+        width: 300px;
+    }
+}
+
+@media (min-width: 850px) {
+    main {
+        display: flex;
+    }
+
+    main section {
+        flex: 50%;
+        /* height: 100%; */
+        position: relative;
+    }
+
+    .largeScreenLg {
+        display: block;
+        min-width: 100px;
+        background-image: url("../images/b3.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: 50%;
+        border-radius: 30px;
+        width: 100%;
+        height: max(80vh, 600px);
+        
+        background-repeat: no-repeat;
+    }
+
+
+    main section:first-child {
+        min-width: 600px;
+    }
+
+    .others {
+        display: flex;
+        text-align: center;
+        right: 50%;
+        transform: translateX(50%);
+    }
+
+    .others p:first-child {
+        flex: 50%;
+    }
+
+    .others p:last-child {
+        flex: 50%;
+    }
+}
+
+@media (min-width: 1200px) {
+
+    .largeScreenLg {
+        background-image: url("../images/lg-login_large.jpg");
+        background-repeat: no-repeat;
+        min-width: 440px;
+        background-size: contain;
+    }
+
+    
+}
+
