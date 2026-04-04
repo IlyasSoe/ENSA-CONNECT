@@ -13,7 +13,7 @@
 body {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     min-height: 100vh;
     background-color: var(--bodyBc);
 }
@@ -27,7 +27,6 @@ main {
     min-height: max(100vh, 600px);
     min-width: 100vw;
     position: relative;
-
     
 }
 
@@ -132,6 +131,10 @@ input[type="submit"]:hover {
 }
 
 @media (min-width: 675px) {
+    
+    body {
+        align-items: center;
+    }
     main {
         min-height: max(80vh, 600px);
         min-width: 60vw;
