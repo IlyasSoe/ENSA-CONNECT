@@ -1,7 +1,6 @@
 <?php
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+use Resend;
 require '../../vendor/autoload.php';
 require 'db.php';
 
@@ -43,25 +42,17 @@ try {
     );
     $stmt->execute([$email, $hashedPassword, $user_name, $role_id, $token]);
 
-    $mail = new PHPMailer(true);
-    $mail->isSMTP();
-    $mail->Host       = 'smtp.gmail.com';
-    $mail->SMTPAuth   = true;
-    $mail->Username   = getenv('GMAIL_USER');
-    $mail->Password   = getenv('GMAIL_PASSWORD');
-    $mail->SMTPSecure = 'ssl';
-    $mail->Port       = 465;
-    
-    $mail->setFrom(getenv('GMAIL_USER'), 'ENSA Connect');
-    $mail->addAddress($email);
-    $mail->Subject = 'Vérification de votre compte ENSA Connect';
-    $mail->Body    = "Bonjour $user_name,\n\nCliquez ici pour vérifier votre compte :\nhttps://ton-site.railway.app/API/AUTH/verify.php?token=$token\n\nCe lien expire dans 24h.";
-    
-    $mail->send();
+    $resend = Resend::client(getenv('RESEND_API_KEY'));
+    $resend->emails->send([
+        'from'    => 'ENSA Connect <onboarding@resend.dev>',
+        'to'      => [$email],
+        'subject' => 'Vérification de votre compte ENSA Connect',
+        'text'    => "Bonjour $user_name,\n\nCliquez ici pour vérifier votre compte :\nhttps://ton-site.railway.app/API/AUTH/verify.php?token=$token\n\nCe lien expire dans 24h.",
+    ]);
     echo json_encode(["success" => "Compte créé pour $user_name ! Vérifiez votre email."]);
 
-} catch (Exception $e) {
-    echo json_encode(["error" => "Email non envoyé : " . $mail->ErrorInfo]);
+} catch (\Exception $e) {
+    echo json_encode(["error" => "Email non envoyé : " . $e->getMessage()]);
 } catch (PDOException $e) {
     echo json_encode(["error" => "Email or Username already exists."]);
 }
