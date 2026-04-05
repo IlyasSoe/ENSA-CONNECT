@@ -49,8 +49,8 @@ try {
     $mail->SMTPAuth   = true;
     $mail->Username   = getenv('GMAIL_USER');
     $mail->Password   = getenv('GMAIL_PASSWORD');
-    $mail->SMTPSecure = 'tls';
-    $mail->Port       = 587;
+    $mail->SMTPSecure = 'ssl';
+    $mail->Port       = 465;
     
     $mail->setFrom(getenv('GMAIL_USER'), 'ENSA Connect');
     $mail->addAddress($email);
