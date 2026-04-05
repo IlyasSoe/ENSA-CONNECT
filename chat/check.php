@@ -1,4 +1,4 @@
 <?php
 require '/app/vendor/autoload.php';
-echo shell_exec('cat /app/vendor/getbrevo/brevo-php/src/Brevo.php');
+echo shell_exec('ls /app/vendor/getbrevo/brevo-php/src/TransactionalEmails/');
 ?>
