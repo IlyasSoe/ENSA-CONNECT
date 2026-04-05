@@ -58,7 +58,7 @@ try {
             'sender'      => $sender,
             'to'          => [$recipient],
             'subject'     => 'Vérification de votre compte ENSA Connect',
-            'textContent' => "Bonjour $user_name,\n\nCliquez ici pour vérifier votre compte :\nhttps://ton-site.railway.app/API/AUTH/verify.php?token=$token\n\nCe lien expire dans 24h.",
+            'textContent' => "Bonjour $user_name,\n\nCliquez ici pour vérifier votre compte :\nhttps://ensa-connect-production.up.railway.app/API/AUTH/verify.php?token=$token\n\nCe lien expire dans 24h.",
         ])
     );
     
