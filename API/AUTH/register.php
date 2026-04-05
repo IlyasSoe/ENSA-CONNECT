@@ -3,8 +3,6 @@
 require '/app/vendor/autoload.php';
 require 'db.php';
 
-use Brevo\Client\Configuration;
-
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -43,22 +41,15 @@ try {
     );
     $stmt->execute([$email, $hashedPassword, $user_name, $role_id, $token]);
 
-    $config = Brevo\Client\Configuration::getDefaultConfiguration()
-    ->setApiKey('api-key', getenv('BREVO_API_KEY'));
+    $brevo = new Brevo\Brevo(getenv('BREVO_API_KEY'));
 
-    $apiInstance = new Brevo\Client\Api\TransactionalEmailsApi(
-        new GuzzleHttp\Client(),
-        $config
-    );
-
-    $sendSmtpEmail = new Brevo\Client\Model\SendSmtpEmail([
-        'to'      => [['email' => $email, 'name' => $user_name]],
-        'sender'  => ['email' => 'isoi.ily22@gmail.com', 'name' => 'ENSA Connect'],
+    $brevo->transactionalEmails->send(new Brevo\TransactionalEmails\Requests\SendSmtpEmail([
+        'to' => [['email' => $email, 'name' => $user_name]],
+        'sender' => ['email' => 'isoi.ily22@gmail.com', 'name' => 'ENSA Connect'],
         'subject' => 'Vérification de votre compte ENSA Connect',
-        'textContent' => "Bonjour $user_name,\n\nCliquez ici pour vérifier votre compte :\nhttps://ensa-connect-production.up.railway.app/API/AUTH/verify.php?token=$token\n\nCe lien expire dans 24h.",
-    ]);
-
-    $apiInstance->sendTransacEmail($sendSmtpEmail);
+        'textContent' => "Bonjour $user_name,\n\nCliquez ici pour vérifier votre compte :\nhttps://ton-site.railway.app/API/AUTH/verify.php?token=$token\n\nCe lien expire dans 24h.",
+    ]));
+    
     echo json_encode(["success" => "Compte créé pour $user_name ! Vérifiez votre email."]);
 
 } catch (\Exception $e) {
