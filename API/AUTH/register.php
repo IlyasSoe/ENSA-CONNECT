@@ -1,4 +1,8 @@
 <?php
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require '../../vendor/autoload.php';
 require 'db.php';
 
 header('Content-Type: application/json');
@@ -39,8 +43,25 @@ try {
     );
     $stmt->execute([$email, $hashedPassword, $user_name, $role_id, $token]);
 
-    echo json_encode(["success" => "Account created for $user_name! Please verify your email."]);
+    $mail = new PHPMailer(true);
+    $mail->isSMTP();
+    $mail->Host       = 'smtp.gmail.com';
+    $mail->SMTPAuth   = true;
+    $mail->Username   = getenv('GMAIL_USER');
+    $mail->Password   = getenv('GMAIL_PASSWORD');
+    $mail->SMTPSecure = 'tls';
+    $mail->Port       = 587;
+    
+    $mail->setFrom(getenv('GMAIL_USER'), 'ENSA Connect');
+    $mail->addAddress($email);
+    $mail->Subject = 'Vérification de votre compte ENSA Connect';
+    $mail->Body    = "Bonjour $user_name,\n\nCliquez ici pour vérifier votre compte :\nhttps://ton-site.railway.app/API/AUTH/verify.php?token=$token\n\nCe lien expire dans 24h.";
+    
+    $mail->send();
+    echo json_encode(["success" => "Compte créé pour $user_name ! Vérifiez votre email."]);
 
+} catch (Exception $e) {
+    echo json_encode(["error" => "Email non envoyé : " . $mail->ErrorInfo]);
 } catch (PDOException $e) {
     echo json_encode(["error" => "Email or Username already exists."]);
 }
