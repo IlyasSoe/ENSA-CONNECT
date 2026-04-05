@@ -1,6 +1,5 @@
 <?php
 
-use Resend;
 require '../../vendor/autoload.php';
 require 'db.php';
 
@@ -45,7 +44,7 @@ try {
     $resend = Resend::client(getenv('RESEND_API_KEY'));
     $resend->emails->send([
         'from'    => 'ENSA Connect <onboarding@resend.dev>',
-        'to'      => [$email],
+        'to' => ['isoi.ily22@gmail.com'],
         'subject' => 'Vérification de votre compte ENSA Connect',
         'text'    => "Bonjour $user_name,\n\nCliquez ici pour vérifier votre compte :\nhttps://ton-site.railway.app/API/AUTH/verify.php?token=$token\n\nCe lien expire dans 24h.",
     ]);
