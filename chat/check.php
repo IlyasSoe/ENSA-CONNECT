@@ -1,4 +1,4 @@
 <?php
 require '/app/vendor/autoload.php';
-echo shell_exec('ls /app/vendor/getbrevo/brevo-php/src/');
+echo class_exists('Brevo\TransactionalEmails\Api\TransactionalEmailsApi') ? "OK" : "NOT FOUND";
 ?>
