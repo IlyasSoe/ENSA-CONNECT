@@ -1,8 +1,9 @@
 <?php
 
-use Brevo\Client\Configuration;
 require '../../vendor/autoload.php';
 require 'db.php';
+
+use Brevo\Client\Configuration;
 
 header('Content-Type: application/json');
 
