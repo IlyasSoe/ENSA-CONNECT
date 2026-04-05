@@ -1,6 +1,12 @@
 {
     "require": {
         "phpmailer/phpmailer": "^7.0",
-        "resend/resend-php": "^1.2"
+        "resend/resend-php": "^1.2",
+        "getbrevo/brevo-php": "^4.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     }
 }
