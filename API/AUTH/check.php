@@ -1,4 +1,4 @@
 <?php
-require '../API/AUTH/db.php';
+require 'db.php';
 echo "Connexion réussie !";
 ?>
