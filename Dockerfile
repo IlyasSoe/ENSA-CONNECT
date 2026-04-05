@@ -5,5 +5,6 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 WORKDIR /app
 COPY . .
 RUN composer install
+RUN composer dump-autoload -o
 RUN composer install --working-dir=chat
 CMD ["php", "start.php"]
