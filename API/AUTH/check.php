@@ -1,7 +1,6 @@
 <?php
-var_dump(extension_loaded('pdo_mysql'));
-var_dump(PDO::getAvailableDrivers());
-
-require 'db.php';
-echo "Connexion réussie !";
+echo "HOST: " . getenv('MYSQLHOST') . "<br>";
+echo "PORT: " . getenv('MYSQLPORT') . "<br>";
+echo "DB: " . getenv('MYSQLDATABASE') . "<br>";
+echo "USER: " . getenv('MYSQLUSER') . "<br>";
 ?>
