@@ -25,7 +25,7 @@
             <form action="../../API/AUTH/register.php" method="post">
                 <p>
                     <label for="nom">Nom complet *</label>
-                    <input type="text" id="nom" name="nom" pattern="^[a-zA-ZÀ-ÿ\s\-']{3,50}$" title="Nom complet : lettres uniquement, 3 à 50 caractères" required>
+                    <input type="text" id="nom" name="username" pattern="^[a-zA-ZÀ-ÿ\s\-']{3,50}$" title="Nom complet : lettres uniquement, 3 à 50 caractères" required>
                 </p>
 
                 <p>
@@ -36,7 +36,7 @@
                 <p>
                     <label for="mdp">Mot de passe *</label>
                     <section class="password">   
-                        <input type="password" id="mdp" name="mdp" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\-_#^])[A-Za-z\d@$!%*?&\-_#^]{8,}$" title="Min 8 caractères, une majuscule, une minuscule, un chiffre, un caractère spécial (@$!%*?&-_#^)" required>
+                        <input type="password" id="mdp" name="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\-_#^])[A-Za-z\d@$!%*?&\-_#^]{8,}$" title="Min 8 caractères, une majuscule, une minuscule, un chiffre, un caractère spécial (@$!%*?&-_#^)" required>
                         <img src="images/eye.svg" alt="" title="show">
                     </section>
                     
