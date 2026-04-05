@@ -1,3 +1,3 @@
 <?php
-echo shell_exec('cat /app/vendor/composer/installed.json') ;
+echo shell_exec('ls /app/vendor/getbrevo') ?? "getbrevo not found";
 ?>
