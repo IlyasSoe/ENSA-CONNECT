@@ -1,4 +1,4 @@
 <?php
 require '/app/vendor/autoload.php';
-echo class_exists('Brevo\Client\Configuration') ? "Brevo OK" : "Brevo NOT FOUND";
+echo shell_exec('ls /app/vendor/getbrevo/brevo-php/src/');
 ?>
